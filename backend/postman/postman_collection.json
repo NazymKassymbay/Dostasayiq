@@ -1,0 +1,720 @@
+{
+  "info": {
+    "name": "Dostasayiq API",
+    "_postman_id": "dostasayiq-api-collection",
+    "description": "Partner Finder Platform — Full API Collection\nBase URL: http://localhost:8000\n\nSetup:\n1. Register or Login first\n2. Copy the token from response\n3. The {{token}} variable is used automatically in all authenticated requests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "paste_your_token_here",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"nazym\",\n  \"email\": \"nazym@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register", ""]
+            },
+            "description": "Register a new user. Returns token + username."
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "status": "Created",
+              "code": 201,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"token\": \"9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b\",\n  \"username\": \"nazym\"\n}"
+            },
+            {
+              "name": "400 Username taken",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"username\": [\"Username already taken.\"]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.token) {",
+                  "  pm.collectionVariables.set('token', json.token);",
+                  "  console.log('Token saved:', json.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"nazym\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login", ""]
+            },
+            "description": "Login with username + password. Token is automatically saved to {{token}} variable."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"token\": \"9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b\",\n  \"username\": \"nazym\"\n}"
+            },
+            {
+              "name": "400 Invalid credentials",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"error\": \"Invalid credentials\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Token {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/logout/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "logout", ""]
+            },
+            "description": "Logout — invalidates the current token. Requires authentication."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"message\": \"Logged out\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Token {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/profile/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "profile", ""]
+            },
+            "description": "Returns the currently authenticated user's profile."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"id\": 1,\n  \"username\": \"nazym\",\n  \"email\": \"nazym@example.com\",\n  \"profile\": {\n    \"id\": 1,\n    \"bio\": \"Looking for project partners!\",\n    \"city\": \"Almaty\",\n    \"skills\": \"Python, Angular, Django\",\n    \"portfolio_url\": \"https://github.com/NazymKassymbay\",\n    \"github_url\": \"https://github.com/NazymKassymbay\",\n    \"experience_level\": \"junior\",\n    \"looking_for\": \"Co-founder\",\n    \"avatar_color\": \"#6366f1\",\n    \"created_at\": \"2026-04-14T10:00:00Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Profile by Username",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Token {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/profile/nazym/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "profile", "nazym", ""]
+            },
+            "description": "Returns another user's public profile by username."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"id\": 2,\n  \"username\": \"dinara\",\n  \"email\": \"dinara@example.com\",\n  \"profile\": {\n    \"id\": 2,\n    \"bio\": \"Full-stack developer\",\n    \"city\": \"Astana\",\n    \"skills\": \"React, Node.js\",\n    \"portfolio_url\": \"\",\n    \"github_url\": \"https://github.com/Dinara011\",\n    \"experience_level\": \"middle\",\n    \"looking_for\": \"Team member\",\n    \"avatar_color\": \"#ec4899\",\n    \"created_at\": \"2026-04-14T11:00:00Z\"\n  }\n}"
+            },
+            {
+              "name": "404 Not Found",
+              "status": "Not Found",
+              "code": 404,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"error\": \"Not found\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update My Profile",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Token {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bio\": \"Looking for a co-founder for my EdTech startup!\",\n  \"city\": \"Almaty\",\n  \"skills\": \"Python, Angular, Django, PostgreSQL\",\n  \"portfolio_url\": \"https://nazym.dev\",\n  \"github_url\": \"https://github.com/NazymKassymbay\",\n  \"experience_level\": \"junior\",\n  \"looking_for\": \"Co-founder\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/profile/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "profile", ""]
+            },
+            "description": "Update the currently authenticated user's profile. All fields are optional (PATCH)."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"id\": 1,\n  \"bio\": \"Looking for a co-founder for my EdTech startup!\",\n  \"city\": \"Almaty\",\n  \"skills\": \"Python, Angular, Django, PostgreSQL\",\n  \"portfolio_url\": \"https://nazym.dev\",\n  \"github_url\": \"https://github.com/NazymKassymbay\",\n  \"experience_level\": \"junior\",\n  \"looking_for\": \"Co-founder\",\n  \"avatar_color\": \"#6366f1\",\n  \"created_at\": \"2026-04-14T10:00:00Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "List All Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/auth/users/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "users", ""]
+            },
+            "description": "Returns a list of all registered users with their profiles. Public endpoint."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "[\n  {\n    \"id\": 1,\n    \"username\": \"nazym\",\n    \"email\": \"nazym@example.com\",\n    \"profile\": {\n      \"bio\": \"Looking for project partners!\",\n      \"city\": \"Almaty\",\n      \"skills\": \"Python, Angular\",\n      \"experience_level\": \"junior\",\n      \"avatar_color\": \"#6366f1\"\n    }\n  },\n  {\n    \"id\": 2,\n    \"username\": \"dinara\",\n    \"email\": \"dinara@example.com\",\n    \"profile\": {\n      \"bio\": \"Full-stack developer\",\n      \"city\": \"Astana\",\n      \"skills\": \"React, Node.js\",\n      \"experience_level\": \"middle\",\n      \"avatar_color\": \"#ec4899\"\n    }\n  }\n]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Posts",
+      "item": [
+        {
+          "name": "List Posts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/posts/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "posts", ""]
+            },
+            "description": "Returns all active posts. Public endpoint. No authentication required."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "[\n  {\n    \"id\": 1,\n    \"title\": \"Looking for a co-founder for EdTech startup\",\n    \"description\": \"I'm building a platform for KBTU students. Need a backend dev.\",\n    \"stack\": \"Python, Django, React\",\n    \"level\": \"mvp\",\n    \"sphere\": \"edtech\",\n    \"city\": \"Almaty\",\n    \"preferred_time\": \"Evenings, Weekends\",\n    \"experience_required\": \"junior\",\n    \"is_active\": true,\n    \"author\": 1,\n    \"author_username\": \"nazym\",\n    \"author_avatar_color\": \"#6366f1\",\n    \"author_bio\": \"Looking for project partners!\",\n    \"author_experience\": \"junior\",\n    \"category\": 3,\n    \"category_name\": \"Project\",\n    \"category_icon\": \"💡\",\n    \"category_color\": \"#f59e0b\",\n    \"likes_count\": 5,\n    \"is_liked\": false,\n    \"created_at\": \"2026-04-14T12:00:00Z\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "List Posts — Filter by keyword",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/posts/?q=python",
+              "host": ["{{base_url}}"],
+              "path": ["api", "posts", ""],
+              "query": [
+                { "key": "q", "value": "python", "description": "Search in title, description, stack" }
+              ]
+            },
+            "description": "Filter posts by keyword — searches title, description, and stack fields."
+          },
+          "response": []
+        },
+        {
+          "name": "List Posts — Filter by city",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/posts/?city=Almaty",
+              "host": ["{{base_url}}"],
+              "path": ["api", "posts", ""],
+              "query": [
+                { "key": "city", "value": "Almaty" }
+              ]
+            },
+            "description": "Filter posts by city."
+          },
+          "response": []
+        },
+        {
+          "name": "List Posts — Filter by sphere",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/posts/?sphere=edtech",
+              "host": ["{{base_url}}"],
+              "path": ["api", "posts", ""],
+              "query": [
+                { "key": "sphere", "value": "edtech", "description": "fintech | edtech | gamedev | healthcare | ecommerce | social | other" }
+              ]
+            },
+            "description": "Filter posts by sphere. Options: fintech, edtech, gamedev, healthcare, ecommerce, social, other."
+          },
+          "response": []
+        },
+        {
+          "name": "List Posts — Filter by experience",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/posts/?experience=junior",
+              "host": ["{{base_url}}"],
+              "path": ["api", "posts", ""],
+              "query": [
+                { "key": "experience", "value": "junior", "description": "junior | middle | senior | any" }
+              ]
+            },
+            "description": "Filter posts by required experience level."
+          },
+          "response": []
+        },
+        {
+          "name": "List Posts — Combined filters",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/posts/?q=startup&city=Almaty&sphere=fintech&experience=junior",
+              "host": ["{{base_url}}"],
+              "path": ["api", "posts", ""],
+              "query": [
+                { "key": "q", "value": "startup" },
+                { "key": "city", "value": "Almaty" },
+                { "key": "sphere", "value": "fintech" },
+                { "key": "experience", "value": "junior" }
+              ]
+            },
+            "description": "Filter posts using multiple parameters at once."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Post Detail",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/posts/1/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "posts", "1", ""]
+            },
+            "description": "Returns full details for a single post by ID."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"id\": 1,\n  \"title\": \"Looking for a co-founder for EdTech startup\",\n  \"description\": \"I'm building a platform for KBTU students. Need a backend dev.\",\n  \"stack\": \"Python, Django, React\",\n  \"level\": \"mvp\",\n  \"sphere\": \"edtech\",\n  \"city\": \"Almaty\",\n  \"preferred_time\": \"Evenings, Weekends\",\n  \"experience_required\": \"junior\",\n  \"is_active\": true,\n  \"author\": 1,\n  \"author_username\": \"nazym\",\n  \"author_avatar_color\": \"#6366f1\",\n  \"author_bio\": \"Looking for project partners!\",\n  \"author_experience\": \"junior\",\n  \"category\": 3,\n  \"category_name\": \"Project\",\n  \"category_icon\": \"💡\",\n  \"category_color\": \"#f59e0b\",\n  \"likes_count\": 5,\n  \"is_liked\": false,\n  \"created_at\": \"2026-04-14T12:00:00Z\"\n}"
+            },
+            {
+              "name": "404 Not Found",
+              "status": "Not Found",
+              "code": 404,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"error\": \"Not found\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Create Post",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Token {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Looking for a sport partner — basketball\",\n  \"description\": \"I play basketball every weekend in Almaty. Looking for someone to play with. All skill levels welcome!\",\n  \"stack\": \"\",\n  \"level\": \"idea\",\n  \"sphere\": \"other\",\n  \"city\": \"Almaty\",\n  \"preferred_time\": \"Weekends 10:00-12:00\",\n  \"experience_required\": \"any\",\n  \"category\": 2\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/posts/create/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "posts", "create", ""]
+            },
+            "description": "Create a new post. Author is automatically set to the authenticated user.\n\nLevel options: idea | mvp | startup\nSphere options: fintech | edtech | gamedev | healthcare | ecommerce | social | other\nExperience options: junior | middle | senior | any"
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "status": "Created",
+              "code": 201,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"id\": 5,\n  \"title\": \"Looking for a sport partner — basketball\",\n  \"description\": \"I play basketball every weekend in Almaty.\",\n  \"stack\": \"\",\n  \"level\": \"idea\",\n  \"sphere\": \"other\",\n  \"city\": \"Almaty\",\n  \"preferred_time\": \"Weekends 10:00-12:00\",\n  \"experience_required\": \"any\",\n  \"is_active\": true,\n  \"author\": 1,\n  \"author_username\": \"nazym\",\n  \"category\": 2,\n  \"likes_count\": 0,\n  \"is_liked\": false,\n  \"created_at\": \"2026-04-17T09:00:00Z\"\n}"
+            },
+            {
+              "name": "400 Validation Error",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"title\": [\"This field is required.\"],\n  \"description\": [\"This field is required.\"]\n}"
+            },
+            {
+              "name": "401 Unauthorized",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"detail\": \"Authentication credentials were not provided.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Post",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Token {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Looking for a sport partner — basketball (Updated)\",\n  \"description\": \"Updated description. Now looking for middle-level players.\",\n  \"city\": \"Almaty\",\n  \"preferred_time\": \"Saturdays only\",\n  \"experience_required\": \"middle\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/posts/5/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "posts", "5", ""]
+            },
+            "description": "Update an existing post. Only the post author can update it. Supports partial update (PATCH-like)."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"id\": 5,\n  \"title\": \"Looking for a sport partner — basketball (Updated)\",\n  \"description\": \"Updated description. Now looking for middle-level players.\",\n  \"city\": \"Almaty\",\n  \"preferred_time\": \"Saturdays only\",\n  \"experience_required\": \"middle\",\n  \"is_active\": true,\n  \"author\": 1,\n  \"author_username\": \"nazym\",\n  \"likes_count\": 0,\n  \"created_at\": \"2026-04-17T09:00:00Z\"\n}"
+            },
+            {
+              "name": "403 Forbidden",
+              "status": "Forbidden",
+              "code": 403,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"error\": \"Forbidden\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Post",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Token {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/posts/5/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "posts", "5", ""]
+            },
+            "description": "Delete a post by ID. Only the post author can delete their own posts."
+          },
+          "response": [
+            {
+              "name": "204 No Content",
+              "status": "No Content",
+              "code": 204,
+              "header": [],
+              "body": ""
+            },
+            {
+              "name": "403 Forbidden",
+              "status": "Forbidden",
+              "code": 403,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"error\": \"Forbidden\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "My Posts",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Token {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/posts/mine/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "posts", "mine", ""]
+            },
+            "description": "Returns all posts created by the currently authenticated user."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "[\n  {\n    \"id\": 1,\n    \"title\": \"Looking for a co-founder for EdTech startup\",\n    \"author_username\": \"nazym\",\n    \"likes_count\": 5,\n    \"created_at\": \"2026-04-14T12:00:00Z\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Like / Unlike Post",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Token {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/posts/1/like/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "posts", "1", "like", ""]
+            },
+            "description": "Toggle like on a post. If not liked — likes it. If already liked — unlikes it."
+          },
+          "response": [
+            {
+              "name": "200 Liked",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"liked\": true,\n  \"likes_count\": 6\n}"
+            },
+            {
+              "name": "200 Unliked",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"liked\": false,\n  \"likes_count\": 5\n}"
+            }
+          ]
+        },
+        {
+          "name": "Recommended Posts",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Token {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/posts/recommended/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "posts", "recommended", ""]
+            },
+            "description": "Returns top-10 posts matched to the current user based on city, experience level, and skills overlap."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "[\n  {\n    \"id\": 3,\n    \"title\": \"Need Angular dev for fintech project\",\n    \"author_username\": \"dinara\",\n    \"city\": \"Almaty\",\n    \"sphere\": \"fintech\",\n    \"experience_required\": \"junior\",\n    \"likes_count\": 2,\n    \"created_at\": \"2026-04-15T08:00:00Z\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "List Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/posts/categories/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "posts", "categories", ""]
+            },
+            "description": "Returns all post categories. Public endpoint."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "[\n  { \"id\": 1, \"name\": \"Study\", \"icon\": \"📚\", \"color\": \"#3b82f6\" },\n  { \"id\": 2, \"name\": \"Sport\", \"icon\": \"⚽\", \"color\": \"#10b981\" },\n  { \"id\": 3, \"name\": \"Project\", \"icon\": \"💡\", \"color\": \"#f59e0b\" },\n  { \"id\": 4, \"name\": \"Travel\", \"icon\": \"✈️\", \"color\": \"#8b5cf6\" },\n  { \"id\": 5, \"name\": \"Gaming\", \"icon\": \"🎮\", \"color\": \"#ef4444\" },\n  { \"id\": 6, \"name\": \"Music\", \"icon\": \"🎵\", \"color\": \"#ec4899\" },\n  { \"id\": 7, \"name\": \"Cooking\", \"icon\": \"🍳\", \"color\": \"#f97316\" },\n  { \"id\": 8, \"name\": \"Books\", \"icon\": \"📖\", \"color\": \"#6366f1\" },\n  { \"id\": 9, \"name\": \"Art\", \"icon\": \"🎨\", \"color\": \"#14b8a6\" },\n  { \"id\": 10, \"name\": \"Business\", \"icon\": \"💼\", \"color\": \"#64748b\" },\n  { \"id\": 11, \"name\": \"Tech\", \"icon\": \"💻\", \"color\": \"#0ea5e9\" },\n  { \"id\": 12, \"name\": \"Other\", \"icon\": \"📁\", \"color\": \"#6366f1\" }\n]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Messages",
+      "item": [
+        {
+          "name": "List Conversations",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Token {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/messages/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "messages", ""]
+            },
+            "description": "Returns a list of all conversations for the current user, with last message and unread count."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "[\n  {\n    \"username\": \"dinara\",\n    \"last_message\": \"Hey, are you still looking for a partner?\",\n    \"last_time\": \"2026-04-17T08:30:00Z\",\n    \"unread\": 2,\n    \"avatar_color\": \"#ec4899\"\n  },\n  {\n    \"username\": \"mariyam\",\n    \"last_message\": \"I'm interested in your project!\",\n    \"last_time\": \"2026-04-16T20:00:00Z\",\n    \"unread\": 0,\n    \"avatar_color\": \"#10b981\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get Messages with User",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Token {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/messages/dinara/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "messages", "dinara", ""]
+            },
+            "description": "Returns all messages in the conversation with a specific user. Also marks messages as read."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "[\n  {\n    \"id\": 1,\n    \"sender\": 2,\n    \"sender_username\": \"dinara\",\n    \"receiver\": 1,\n    \"receiver_username\": \"nazym\",\n    \"content\": \"Hey, are you still looking for a partner?\",\n    \"is_read\": true,\n    \"created_at\": \"2026-04-17T08:30:00Z\"\n  },\n  {\n    \"id\": 2,\n    \"sender\": 1,\n    \"sender_username\": \"nazym\",\n    \"receiver\": 2,\n    \"receiver_username\": \"dinara\",\n    \"content\": \"Yes! Let's talk more about your skills.\",\n    \"is_read\": true,\n    \"created_at\": \"2026-04-17T08:32:00Z\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Send Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Token {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Hi! I saw your post and I'm interested. Can we talk?\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/messages/dinara/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "messages", "dinara", ""]
+            },
+            "description": "Send a message to a specific user by their username."
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "status": "Created",
+              "code": 201,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"id\": 3,\n  \"sender\": 1,\n  \"sender_username\": \"nazym\",\n  \"receiver\": 2,\n  \"receiver_username\": \"dinara\",\n  \"content\": \"Hi! I saw your post and I'm interested. Can we talk?\",\n  \"is_read\": false,\n  \"created_at\": \"2026-04-17T09:00:00Z\"\n}"
+            },
+            {
+              "name": "400 Empty content",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"error\": \"Content required\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Unread Count",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Token {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/messages/unread/count/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "messages", "unread", "count", ""]
+            },
+            "description": "Returns the total count of unread messages for the current user. Used for the navbar badge."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"unread\": 3\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
