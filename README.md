@@ -8,8 +8,8 @@
 
 ## 👥 Team
 
-| Member | Role | Responsibilities |
-|--------|------|-----------------|
+| Member |Git-Link | Role | Responsibilities |
+|--------|---------|------|-----------------|
 | 👩‍💻 **Kassymbay Nazym** |[NazymKassymbay](https://github.com/NazymKassymbay) | Backend Developer | Django models, serializers, FBV & CBV views, CRUD endpoints, CORS & token auth setup, database schema, Postman collection |
 | 👩‍💻 **Aidarkyzy Dinara** |[Dinara011](https://github.com/Dinara011) | Full-Stack Developer | Token authentication (register/login/logout), JWT interceptor, AuthGuard, messaging system (backend + frontend), unread counter |
 | 👩‍💻 **Maxat Mariyam** |[Mariyamchik](https://github.com/Mariyamchik)    | Frontend Developer | Angular components, routing, `[(ngModel)]` forms, `ApiService` with HttpClient, CSS styling, `@for`/`@if` templates, error handling UI |
